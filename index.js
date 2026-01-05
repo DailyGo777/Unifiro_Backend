@@ -5,7 +5,8 @@ import express from "express";
 import cors from "cors";
 import pool from "./db.js";
 import registerRouter from "./routes/registerRoute.js";
-
+import userRouter from "./routes/userRouter.js"
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -33,8 +34,9 @@ app.set('trust proxy', 1);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", registerRouter)
-
+app.use(cookieParser());
+app.use("/api", registerRouter);
+app.use("/api/users", userRouter);
 
 const PORT = process.env.PORT || 8080;
 

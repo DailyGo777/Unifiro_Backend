@@ -71,3 +71,14 @@ CREATE TABLE startup_applications (
   INDEX idx_startup_name (startup_name),
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    mobile VARCHAR(15) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    is_accepted BOOLEAN DEFAULT false,
+    is_verified BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
