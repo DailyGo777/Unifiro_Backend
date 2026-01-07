@@ -80,5 +80,9 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     is_accepted BOOLEAN DEFAULT false,
     is_verified BOOLEAN DEFAULT false,
+    email_otp VARCHAR(6),
+    otp_expires_at DATETIME,
+    reset_token VARCHAR(255),
+    reset_token_expiry DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
