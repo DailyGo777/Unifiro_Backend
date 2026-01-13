@@ -5,9 +5,7 @@ export const generateOTP = () => {
 };
 
 export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -32,3 +30,27 @@ export const sendOtpEmail = async (toEmail, otp) => {
     `,
   });
 };
+
+export const sendForgotPasswordLink = async (link, toEmail) => {
+  await transporter.sendMail({
+    from: `"Unifiro" <${process.env.GMAIL_USER}>`,
+    to: toEmail,
+    subject: "Reset your Unifiro password",
+    html: `
+      <div style="font-family: Arial, sans-serif">
+        <h2>Password Reset</h2>
+        <p>Click the button below to reset your password:</p>
+        <a href="${link}"
+           style="display:inline-block;padding:10px 16px;
+           background:#16a34a;color:#fff;border-radius:6px;
+           text-decoration:none;">
+          Reset Password
+        </a>
+        <p>This link expires in 15 minutes.</p>
+        <br/>
+        <p>– Team Unifiro</p>
+      </div>
+    `,
+  });
+};
+

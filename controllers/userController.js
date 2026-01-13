@@ -2,8 +2,12 @@ import bcrypt from "bcryptjs";
 import pool from "../db.js";
 import jwt from "jsonwebtoken";
 import { generateResetToken } from "../utils/token.js";
-import crypto from 'crypto';
-import { generateOTP, sendOtpEmail } from "../utils/mailer.js";
+import crypto from "crypto";
+import {
+  generateOTP,
+  sendOtpEmail,
+  sendForgotPasswordLink,
+} from "../utils/mailer.js";
 
 export const userSignup = async (req, res) => {
   try {
@@ -33,15 +37,7 @@ export const userSignup = async (req, res) => {
       `INSERT INTO users 
        (full_name, email, mobile, password_hash, is_accepted, email_otp, otp_expires_at)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        fullName,
-        email,
-        mobile,
-        passwordHash,
-        terms,
-        hashedOTP,
-        otpExpiresAt,
-      ]
+      [fullName, email, mobile, passwordHash, terms, hashedOTP, otpExpiresAt]
     );
 
     sendOtpEmail(email, otp).catch(console.error);
@@ -49,13 +45,11 @@ export const userSignup = async (req, res) => {
     res.status(201).json({
       message: "Account created. Please verify your email.",
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const userLogin = async (req, res) => {
   try {
@@ -77,23 +71,19 @@ export const userLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    if(!user.is_verified){
-      return res.status(400).json({ message: "User is not verified" })
+    if (!user.is_verified) {
+      return res.status(400).json({ message: "User is not verified" });
     }
 
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: rememberMe ? "30d" : "1d" }
-    );
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: rememberMe ? "30d" : "1d",
+    });
 
     res.cookie("unifiro_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: rememberMe
-        ? 30 * 24 * 60 * 60 * 1000
-        : 24 * 60 * 60 * 1000,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000,
     });
 
     res.json({
@@ -122,13 +112,11 @@ export const userLogout = (req, res) => {
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
-  if (!email)
-    return res.status(400).json({ message: "Email is required" });
+  if (!email) return res.status(400).json({ message: "Email is required" });
 
-  const [users] = await pool.query(
-    "SELECT id FROM users WHERE email = ?",
-    [email]
-  );
+  const [users] = await pool.query("SELECT id FROM users WHERE email = ?", [
+    email,
+  ]);
 
   if (!users.length) {
     return res.json({ message: "If account exists, reset link sent" });
@@ -143,9 +131,9 @@ export const forgotPassword = async (req, res) => {
     [hashedToken, email]
   );
 
-  // 🚀 send via email (console for now)
   const resetLink = `http://localhost:3000/reset-password?token=${rawToken}`;
-  console.log("RESET LINK:", resetLink);
+
+  sendForgotPasswordLink(resetLink, email);
 
   res.json({ message: "Password reset link sent" });
 };
@@ -157,10 +145,7 @@ export const resetPassword = async (req, res) => {
     return res.status(400).json({ message: "Invalid request" });
   }
 
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   const [users] = await pool.query(
     `SELECT id FROM users 
@@ -216,10 +201,7 @@ export const verifyEmailOtp = async (req, res) => {
       return res.status(410).json({ message: "OTP expired" });
     }
 
-    const isValidOtp = await bcrypt.compare(
-      otp.toString(),
-      user.email_otp
-    );
+    const isValidOtp = await bcrypt.compare(otp.toString(), user.email_otp);
 
     if (!isValidOtp) {
       return res.status(401).json({ message: "Invalid OTP" });
@@ -235,7 +217,6 @@ export const verifyEmailOtp = async (req, res) => {
     );
 
     res.status(200).json({ message: "Email verified successfully" });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -280,7 +261,6 @@ export const resendEmailOtp = async (req, res) => {
     sendOtpEmail(email, otp).catch(console.error);
 
     res.status(200).json({ message: "OTP resent successfully" });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
