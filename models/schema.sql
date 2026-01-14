@@ -86,3 +86,23 @@ CREATE TABLE users (
     reset_token_expiry DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE organizers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  organizer_name VARCHAR(100),
+  organizer_type VARCHAR(50),
+  email VARCHAR(100) UNIQUE,
+  mobile VARCHAR(15),
+  password VARCHAR(255),
+
+  about TEXT,
+  location VARCHAR(100),
+  id_proof VARCHAR(50),
+
+  bank_account VARCHAR(30),
+  ifsc VARCHAR(15),
+
+  status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

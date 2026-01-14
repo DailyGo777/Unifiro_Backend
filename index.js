@@ -6,6 +6,7 @@ import cors from "cors";
 import pool from "./db.js";
 import registerRouter from "./routes/registerRoute.js";
 import userRouter from "./routes/userRouter.js"
+import organizerRouter from "./routes/organizerRouter.js"
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api", registerRouter);
 app.use("/api/users", userRouter);
+app.use("/api/organizer", organizerRouter);
 
 const PORT = process.env.PORT || 8080;
 
