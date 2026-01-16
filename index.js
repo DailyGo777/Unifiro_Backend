@@ -8,6 +8,7 @@ import registerRouter from "./routes/registerRoute.js";
 import userRouter from "./routes/userRouter.js"
 import organizerRouter from "./routes/organizerRouter.js"
 import cookieParser from "cookie-parser";
+import contactRouter from "./routes/contactRouter.js"
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(cookieParser());
 app.use("/api", registerRouter);
 app.use("/api/users", userRouter);
 app.use("/api/organizer", organizerRouter);
+app.use("/api", contactRouter);
 
 const PORT = process.env.PORT || 8080;
 
