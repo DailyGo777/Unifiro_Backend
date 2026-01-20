@@ -104,6 +104,11 @@ CREATE TABLE organizers (
 
   status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
 
+  email_otp VARCHAR(6),
+  otp_expires_at DATETIME,
+  reset_token VARCHAR(255),
+  reset_token_expiry DATETIME,
+
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

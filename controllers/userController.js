@@ -131,7 +131,7 @@ export const forgotPassword = async (req, res) => {
     [hashedToken, email]
   );
 
-  const resetLink = `http://localhost:3000/reset-password?token=${rawToken}`;
+  const resetLink = `http://localhost:3000/reset-password?token=${rawToken}&type=user`;
 
   sendForgotPasswordLink(resetLink, email);
 
