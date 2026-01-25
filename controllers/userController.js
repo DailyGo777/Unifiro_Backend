@@ -100,9 +100,9 @@ export const userLogin = async (req, res) => {
 };
 
 export const userLogout = (req, res) => {
-  res.clearCookie("unifiro_token", {
+  res.clearCookie("user_token", {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
   });
 

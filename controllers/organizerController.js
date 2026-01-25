@@ -115,7 +115,7 @@ export const organizerLogin = async (req, res) => {
       expiresIn: rememberMe ? "30d" : "1d",
     });
 
-    res.cookie("unifiro_token", token, {
+    res.cookie("organizer_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
